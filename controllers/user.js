@@ -29,7 +29,7 @@ const getUsers = (req, res) => {
 const createUser = (req, res) => {
   const { name, avatar } = req.body;
   User.create({ name, avatar })
-    .then((user) => res.status(201).send(user))
+    .then((user) => res.status(201).send({user}))
     .catch((err) => {
       console.error("Error creating user:", err);
       console.log("Error Name:", err.name);

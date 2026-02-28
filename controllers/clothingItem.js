@@ -22,10 +22,10 @@ const getItems = (req, res) => {
 const createItem = (req, res) => {
   console.log(req.user._id);
   const { name, weather, imageUrl } = req.body;
-  const { owner } = req.user._id;
+  const owner = req.user._id;
   clothingItem
     .create({ name, weather, imageUrl, owner })
-    .then((clothingItem) => res.status(201).send(clothingItem))
+    .then((clothingItem) => res.status(201).send({ clothingItem }))
     .catch((err) => {
       console.error("Error creating item:", err);
       console.log("Error Name:", err.name);
@@ -44,9 +44,9 @@ const createItem = (req, res) => {
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
   clothingItem
-    .delete(itemId)
+    .findByIdAndDelete(itemId)
     .orFail()
-    .then((user) => res.status(200).send({ message: "item deleted" }))
+    .then((clothingItem) => res.status(200).send({ message: "item deleted" }))
     .catch((err) => {
       console.error("Error deleting item:", err);
       console.log("Error Name:", err.name);
@@ -68,20 +68,62 @@ const deleteItem = (req, res) => {
 
 const likeItem = (req, res) => {
   console.log(req.user._id);
-  clothingItem.findByIdAndUpdate(
-    req.params.itemId,
-    { $addToSet: { likes: req.user._id } },
-    { new: true }
-  );
+  clothingItem
+    .findByIdAndUpdate(
+      req.params.itemId,
+      { $addToSet: { likes: req.user._id } },
+      { new: true }
+    )
+    .orFail()
+    .then((clothingItem) => res.status(200).send({ message: "item liked" }))
+    .catch((err) => {
+      console.error("Error deleting item:", err);
+      console.log("Error Name:", err.name);
+      if (err.name === "CastError") {
+        return res
+          .status(ERROR_CODE_400)
+          .send({ message: "Invalid ID passed to the params." });
+      } else if (
+        err.name === "DocumentNotFoundError"
+      ) {
+        return res.status(ERROR_CODE_404).send({
+          message: "There is no clothing item with the requested id.",
+        });
+      } else {
+        return res
+          .status(ERROR_CODE_500)
+          .send({ message: "An error has occurred on the server." });
+      }
+    });
 };
 
 const dislikeItem = (req, res) => {
   console.log(req.user._id);
-  clothingItem.findByIdAndUpdate(
-    req.params.itemId,
-    { $pull: { likes: req.user._id } },
-    { new: true }
-  );
+  clothingItem
+    .findByIdAndUpdate(
+      req.params.itemId,
+      { $pull: { likes: req.user._id } },
+      { new: true }
+    )
+    .orFail()
+    .then((clothingItem) => res.status(200).send({ message: "item disliked" }))
+    .catch((err) => {
+      console.error("Error deleting item:", err);
+      console.log("Error Name:", err.name);
+      if (err.name === "CastError") {
+        return res
+          .status(ERROR_CODE_400)
+          .send({ message: "Invalid ID passed to the params." });
+      } else if (err.name === "DocumentNotFoundError") {
+        return res.status(ERROR_CODE_404).send({
+          message: "There is no clothing item with the requested id.",
+        });
+      } else {
+        return res
+          .status(ERROR_CODE_500)
+          .send({ message: "An error has occurred on the server." });
+      }
+    });
 };
 
-module.exports = { getItems, createItem, deleteItem, likeItem, dislikeItem};
+module.exports = { getItems, createItem, deleteItem, likeItem, dislikeItem };
