@@ -43,10 +43,20 @@ const createItem = (req, res) => {
 
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
+  const userId  = req.user._id;
   clothingItem
-    .findByIdAndDelete(itemId)
+    .findById(itemId)
     .orFail()
-    .then((item) => res.status(200).send({item}))
+    .then((item) => {
+      if (item.owner.toString() !== userId) {
+        return res
+          .status(403)
+          .send({ message: "You do not have permission to delete this item" });
+      }
+      clothingItem.findByIdAndDelete(itemId).then((item) => {
+        res.status(200).send({ message: "Item Deleted" });
+      });
+    })
     .catch((err) => {
       console.error("Error deleting item:", err);
       console.log("Error Name:", err.name);
@@ -54,15 +64,15 @@ const deleteItem = (req, res) => {
         return res
           .status(ERROR_CODE_400)
           .send({ message: "Invalid ID passed to the params." });
-      } if (err.name === "DocumentNotFoundError") {
+      }
+      if (err.name === "DocumentNotFoundError") {
         return res.status(ERROR_CODE_404).send({
           message: "There is no clothing item with the requested id.",
         });
-      } 
-        return res
-          .status(ERROR_CODE_500)
-          .send({ message: "An error has occurred on the server." });
-      
+      }
+      return res
+        .status(ERROR_CODE_500)
+        .send({ message: "An error has occurred on the server." });
     });
 };
 
@@ -83,17 +93,15 @@ const likeItem = (req, res) => {
         return res
           .status(ERROR_CODE_400)
           .send({ message: "Invalid ID passed to the params." });
-      } if (
-        err.name === "DocumentNotFoundError"
-      ) {
+      }
+      if (err.name === "DocumentNotFoundError") {
         return res.status(ERROR_CODE_404).send({
           message: "There is no clothing item with the requested id.",
         });
-      } 
-        return res
-          .status(ERROR_CODE_500)
-          .send({ message: "An error has occurred on the server." });
-      
+      }
+      return res
+        .status(ERROR_CODE_500)
+        .send({ message: "An error has occurred on the server." });
     });
 };
 
@@ -114,15 +122,15 @@ const dislikeItem = (req, res) => {
         return res
           .status(ERROR_CODE_400)
           .send({ message: "Invalid ID passed to the params." });
-      } if (err.name === "DocumentNotFoundError") {
+      }
+      if (err.name === "DocumentNotFoundError") {
         return res.status(ERROR_CODE_404).send({
           message: "There is no clothing item with the requested id.",
         });
-      } 
-        return res
-          .status(ERROR_CODE_500)
-          .send({ message: "An error has occurred on the server." });
-      
+      }
+      return res
+        .status(ERROR_CODE_500)
+        .send({ message: "An error has occurred on the server." });
     });
 };
 
