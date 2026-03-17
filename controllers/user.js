@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 
 const {
   ERROR_CODE_400,
+  UNAUTHORIZED_ERROR_CODE,
   ERROR_CODE_404,
   ERROR_CODE_500,
   ERROR_CODE_409,
@@ -13,7 +14,9 @@ const { JWT_SECRET } = require("../utils/config");
 const login = (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
-    return res.status(400).send({ message: "Email and password are required" });
+    return res
+      .status(ERROR_CODE_400)
+      .send({ message: "Email and password are required" });
   }
   return User.findUserByCredentials(email, password)
     .then((user) => {
@@ -23,7 +26,16 @@ const login = (req, res) => {
       res.status(200).send({ token });
     })
     .catch((err) => {
-      res.status(401).send({ message: err.message });
+        console.error("Error creating user:", err);
+        console.log("Error Name:", err.name);
+        if (err.name === "ValidationError") {
+          return res.status(UNAUTHORIZED_ERROR_CODE).send({
+            message: "Incorrect Email or Password",
+          });
+        }
+        return res
+          .status(ERROR_CODE_500)
+          .send({ message: "An error has occurred on the server." });
     });
 };
 
@@ -41,7 +53,11 @@ const getUsers = (req, res) => {
 
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
-
+    if (!email || !password) {
+      return res
+        .status(ERROR_CODE_400)
+        .send({ message: "Email and password are required" });
+    }
   bcrypt.hash(password, 10).then((hashedpassword) => {
     User.create({ name, avatar, email, password: hashedpassword })
       .then((user) => {

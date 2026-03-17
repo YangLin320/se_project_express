@@ -27,8 +27,6 @@ app.get('/items', getItems);
 app.use(auth);
 
 app.use("/", indexRouter);
-app.use("/items", itemRouter);
-app.use("/users", userRouter);
 
 app.listen(PORT, () => {
   console.log(`App working on ${PORT}`);
