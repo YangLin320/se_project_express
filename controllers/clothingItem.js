@@ -13,7 +13,7 @@ const getItems = (req, res) => {
     .then((items) => res.status(200).send({ items }))
     .catch((err) => {
       console.error("Error finding items:", err);
-      console.log("Error Name:", err.name);
+      console.error("Error Name:", err.name);
       return res
         .status(ERROR_CODE_500)
         .send({ message: "An error has occurred on the server." });
@@ -21,7 +21,6 @@ const getItems = (req, res) => {
 };
 
 const createItem = (req, res) => {
-  console.log(req.user._id);
   const { name, weather, imageUrl } = req.body;
   const owner = req.user._id;
   clothingItem
@@ -29,7 +28,7 @@ const createItem = (req, res) => {
     .then((item) => res.status(201).send({ item }))
     .catch((err) => {
       console.error("Error creating item:", err);
-      console.log("Error Name:", err.name);
+      console.error("Error Name:", err.name);
 
       if (err.name === "ValidationError") {
         return res.status(ERROR_CODE_400).send({
@@ -44,7 +43,7 @@ const createItem = (req, res) => {
 
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
-  const userId  = req.user._id;
+  const userId = req.user._id;
   clothingItem
     .findById(itemId)
     .orFail()
@@ -54,13 +53,13 @@ const deleteItem = (req, res) => {
           .status(FORBIDDEN_ERROR_CODE)
           .send({ message: "You do not have permission to delete this item" });
       }
-      clothingItem.findByIdAndDelete(itemId).then((item) => {
-        res.status(200).send({ message: "Item Deleted" });
+      return clothingItem.findByIdAndDelete(itemId).then(() => {
+        return res.status(200).send({ message: "Item Deleted" });
       });
     })
     .catch((err) => {
       console.error("Error deleting item:", err);
-      console.log("Error Name:", err.name);
+      console.error("Error Name:", err.name);
       if (err.name === "CastError") {
         return res
           .status(ERROR_CODE_400)
@@ -78,7 +77,6 @@ const deleteItem = (req, res) => {
 };
 
 const likeItem = (req, res) => {
-  console.log(req.user._id);
   clothingItem
     .findByIdAndUpdate(
       req.params.itemId,
@@ -89,7 +87,7 @@ const likeItem = (req, res) => {
     .then(() => res.status(200).send({ message: "item liked" }))
     .catch((err) => {
       console.error("Error liking item:", err);
-      console.log("Error Name:", err.name);
+      console.error("Error Name:", err.name);
       if (err.name === "CastError") {
         return res
           .status(ERROR_CODE_400)
@@ -107,7 +105,6 @@ const likeItem = (req, res) => {
 };
 
 const dislikeItem = (req, res) => {
-  console.log(req.user._id);
   clothingItem
     .findByIdAndUpdate(
       req.params.itemId,
@@ -118,7 +115,7 @@ const dislikeItem = (req, res) => {
     .then(() => res.status(200).send({ message: "item disliked" }))
     .catch((err) => {
       console.error("Error disliking item:", err);
-      console.log("Error Name:", err.name);
+      console.error("Error Name:", err.name);
       if (err.name === "CastError") {
         return res
           .status(ERROR_CODE_400)

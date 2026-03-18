@@ -1,6 +1,6 @@
 const bcrypt = require("bcryptjs");
-const User = require("../models/user");
 const jwt = require("jsonwebtoken");
+const User = require("../models/user");
 
 const {
   ERROR_CODE_400,
@@ -26,16 +26,16 @@ const login = (req, res) => {
       res.status(200).send({ token });
     })
     .catch((err) => {
-        console.error("Error creating user:", err);
-        console.log("Error Name:", err.name);
-        if (err.name === "ValidationError") {
-          return res.status(UNAUTHORIZED_ERROR_CODE).send({
-            message: "Incorrect Email or Password",
-          });
-        }
-        return res
-          .status(ERROR_CODE_500)
-          .send({ message: "An error has occurred on the server." });
+      console.error("Error creating user:", err);
+      console.error("Error Name:", err.name);
+      if (err.name === "ValidationError") {
+        return res.status(UNAUTHORIZED_ERROR_CODE).send({
+          message: "Incorrect Email or Password",
+        });
+      }
+      return res
+        .status(ERROR_CODE_500)
+        .send({ message: "An error has occurred on the server." });
     });
 };
 
@@ -53,26 +53,27 @@ const getUsers = (req, res) => {
 
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
-    if (!email || !password) {
-      return res
-        .status(ERROR_CODE_400)
-        .send({ message: "Email and password are required" });
-    }
+  if (!email || !password) {
+    return res
+      .status(ERROR_CODE_400)
+      .send({ message: "Email and password are required" });
+  }
   bcrypt.hash(password, 10).then((hashedpassword) => {
     User.create({ name, avatar, email, password: hashedpassword })
       .then((user) => {
         const userResponse = user.toObject();
         delete userResponse.password;
-        res.status(201).send({ userResponse });
+        return res.status(201).send({ userResponse });
       })
       .catch((err) => {
         console.error("Error creating user:", err);
-        console.log("Error Name:", err.name);
+        console.error("Error Name:", err.name);
         if (err.name === "ValidationError") {
           return res.status(ERROR_CODE_400).send({
             message: "Invalid data passed to the methods for creating a user",
           });
-        } else if (err.code === 11000) {
+        }
+        if (err.code === 11000) {
           return res.status(ERROR_CODE_409).send({
             message: "A user with this email already exists",
           });
@@ -92,7 +93,7 @@ const getCurrentUser = (req, res) => {
     .then((user) => res.status(200).send({ user }))
     .catch((err) => {
       console.error("Error finding user by ID:", err);
-      console.log("Error Name:", err.name);
+      console.error("Error Name:", err.name);
       if (err.name === "CastError") {
         return res
           .status(ERROR_CODE_400)
