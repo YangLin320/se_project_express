@@ -53,9 +53,9 @@ const deleteItem = (req, res) => {
           .status(FORBIDDEN_ERROR_CODE)
           .send({ message: "You do not have permission to delete this item" });
       }
-      return clothingItem.findByIdAndDelete(itemId).then(() => {
-        return res.status(200).send({ message: "Item Deleted" });
-      });
+      return clothingItem
+        .findByIdAndDelete(itemId)
+        .then(() => res.status(200).send({ message: "Item Deleted" }));
     })
     .catch((err) => {
       console.error("Error deleting item:", err);
@@ -84,7 +84,7 @@ const likeItem = (req, res) => {
       { new: true }
     )
     .orFail()
-    .then(() => res.status(200).send({ message: "item liked" }))
+    .then((item) => res.send({ data: item }))
     .catch((err) => {
       console.error("Error liking item:", err);
       console.error("Error Name:", err.name);
@@ -112,7 +112,7 @@ const dislikeItem = (req, res) => {
       { new: true }
     )
     .orFail()
-    .then(() => res.status(200).send({ message: "item disliked" }))
+    .then((item) => res.send({ data: item }))
     .catch((err) => {
       console.error("Error disliking item:", err);
       console.error("Error Name:", err.name);

@@ -13,7 +13,6 @@ app.use(cors());
 mongoose
   .connect("mongodb://127.0.0.1:27017/wtwr_db")
   .then(() => {
-    // eslint-disable-next-line no-console
     console.info("Database Connected Successfully");
   })
   .catch(console.error);
@@ -29,6 +28,5 @@ app.use(auth);
 app.use("/", indexRouter);
 
 app.listen(PORT, () => {
-  // eslint-disable-next-line no-console
   console.info(`App working on ${PORT}`);
 });

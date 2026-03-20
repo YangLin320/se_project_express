@@ -28,7 +28,7 @@ const login = (req, res) => {
     .catch((err) => {
       console.error("Error creating user:", err);
       console.error("Error Name:", err.name);
-      if (err.name === "ValidationError") {
+      if (err.message === "Incorrect email or password") {
         return res.status(UNAUTHORIZED_ERROR_CODE).send({
           message: "Incorrect Email or Password",
         });
@@ -58,7 +58,7 @@ const createUser = (req, res) => {
       .status(ERROR_CODE_400)
       .send({ message: "Email and password are required" });
   }
-  bcrypt.hash(password, 10).then((hashedpassword) => {
+  return bcrypt.hash(password, 10).then((hashedpassword) => {
     User.create({ name, avatar, email, password: hashedpassword })
       .then((user) => {
         const userResponse = user.toObject();
