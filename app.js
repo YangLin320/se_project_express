@@ -1,7 +1,6 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
-app.get("/hello", (req, res) => res.send("The server is updated!"));
 const mongoose = require("mongoose");
 const cors = require("cors");
 const indexRouter = require("./routes/index");
