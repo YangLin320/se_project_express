@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 
 const app = express();
@@ -8,7 +9,6 @@ const { getItems } = require("./controllers/clothingItem");
 const errorHandler = require("./middlewares/errorHandler");
 const { errors } = require("celebrate");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
-require("dotenv").config();
 
 app.use(cors());
 
