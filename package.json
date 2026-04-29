@@ -20,11 +20,15 @@
   "homepage": "https://github.com/YangLin320/se_project_express#readme",
   "dependencies": {
     "bcryptjs": "^3.0.3",
+    "celebrate": "^12.1.2",
     "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
     "express": "^4.22.1",
+    "express-winston": "^4.2.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^8.23.0",
-    "validator": "^13.15.26"
+    "validator": "^13.15.35",
+    "winston": "^3.19.0"
   },
   "devDependencies": {
     "eslint": "^8.57.1",

@@ -1,22 +1,15 @@
 const clothingItem = require("../models/clothingItem");
-const {
-  ERROR_CODE_400,
-  FORBIDDEN_ERROR_CODE,
-  ERROR_CODE_404,
-  ERROR_CODE_500,
-} = require("../utils/errors");
 
-// GET ITEMS
+const BadRequestError = require("../errors/BadRequestError");
+const ForbiddenError = require("../errors/ForbiddenError");
+const NotFoundError = require("../errors/NotFoundError");
+
 const getItems = (req, res) => {
   clothingItem
     .find({})
     .then((items) => res.status(200).send({ items }))
     .catch((err) => {
-      console.error("Error finding items:", err);
-      console.error("Error Name:", err.name);
-      return res
-        .status(ERROR_CODE_500)
-        .send({ message: "An error has occurred on the server." });
+      next(err);
     });
 };
 
@@ -27,17 +20,15 @@ const createItem = (req, res) => {
     .create({ name, weather, imageUrl, owner })
     .then((item) => res.status(201).send({ item }))
     .catch((err) => {
-      console.error("Error creating item:", err);
-      console.error("Error Name:", err.name);
-
       if (err.name === "ValidationError") {
-        return res.status(ERROR_CODE_400).send({
-          message: "Invalid data passed to the methods for creating an item.",
-        });
+        next(
+          new BadRequestError(
+            "Invalid data passed to the methods for creating an item."
+          )
+        );
+      } else {
+        next(err);
       }
-      return res
-        .status(ERROR_CODE_500)
-        .send({ message: "An error has occurred on the server." });
     });
 };
 
@@ -49,30 +40,22 @@ const deleteItem = (req, res) => {
     .orFail()
     .then((item) => {
       if (item.owner.toString() !== userId) {
-        return res
-          .status(FORBIDDEN_ERROR_CODE)
-          .send({ message: "You do not have permission to delete this item" });
+        next(ForbiddenError("You do not have permission to delete this item"));
       }
       return clothingItem
         .findByIdAndDelete(itemId)
         .then(() => res.status(200).send({ message: "Item Deleted" }));
     })
     .catch((err) => {
-      console.error("Error deleting item:", err);
-      console.error("Error Name:", err.name);
       if (err.name === "CastError") {
-        return res
-          .status(ERROR_CODE_400)
-          .send({ message: "Invalid ID passed to the params." });
+        next(new BadRequestError("Invalid ID passed to the params."));
+      } else if (err.name === "DocumentNotFoundError") {
+        next(
+          new NotFoundError("There is no clothing item with the requested id.")
+        );
+      } else {
+        next(err);
       }
-      if (err.name === "DocumentNotFoundError") {
-        return res.status(ERROR_CODE_404).send({
-          message: "There is no clothing item with the requested id.",
-        });
-      }
-      return res
-        .status(ERROR_CODE_500)
-        .send({ message: "An error has occurred on the server." });
     });
 };
 
@@ -86,21 +69,15 @@ const likeItem = (req, res) => {
     .orFail()
     .then((item) => res.send({ data: item }))
     .catch((err) => {
-      console.error("Error liking item:", err);
-      console.error("Error Name:", err.name);
       if (err.name === "CastError") {
-        return res
-          .status(ERROR_CODE_400)
-          .send({ message: "Invalid ID passed to the params." });
+        next(new BadRequestError("Invalid ID passed to the params."));
+      } else if (err.name === "DocumentNotFoundError") {
+        next(
+          new NotFoundError("There is no clothing item with the requested id.")
+        );
+      } else {
+        next(err);
       }
-      if (err.name === "DocumentNotFoundError") {
-        return res.status(ERROR_CODE_404).send({
-          message: "There is no clothing item with the requested id.",
-        });
-      }
-      return res
-        .status(ERROR_CODE_500)
-        .send({ message: "An error has occurred on the server." });
     });
 };
 
@@ -114,21 +91,15 @@ const dislikeItem = (req, res) => {
     .orFail()
     .then((item) => res.send({ data: item }))
     .catch((err) => {
-      console.error("Error disliking item:", err);
-      console.error("Error Name:", err.name);
       if (err.name === "CastError") {
-        return res
-          .status(ERROR_CODE_400)
-          .send({ message: "Invalid ID passed to the params." });
+        next(new BadRequestError("Invalid ID passed to the params."));
+      } else if (err.name === "DocumentNotFoundError") {
+        next(
+          new NotFoundError("There is no clothing item with the requested id.")
+        );
+      } else {
+        next(err);
       }
-      if (err.name === "DocumentNotFoundError") {
-        return res.status(ERROR_CODE_404).send({
-          message: "There is no clothing item with the requested id.",
-        });
-      }
-      return res
-        .status(ERROR_CODE_500)
-        .send({ message: "An error has occurred on the server." });
     });
 };
 
