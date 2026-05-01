@@ -6,7 +6,6 @@ const app = express();
 const mongoose = require("mongoose");
 const cors = require("cors");
 const { errors } = require("celebrate");
-const { getItems } = require("./controllers/clothingItem");
 const errorHandler = require("./middlewares/errorHandler");
 const indexRouter = require("./routes/index");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
@@ -22,7 +21,6 @@ mongoose
 app.use(express.json());
 const { PORT = 3001 } = process.env;
 
-app.get("/items", getItems);
 app.use(requestLogger);
 app.use("/", indexRouter);
 app.use(errorLogger);

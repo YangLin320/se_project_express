@@ -2,6 +2,7 @@ const router = require("express").Router();
 const { ERROR_CODE_404 } = require("../utils/errors");
 const { createUser, login } = require("../controllers/user");
 const auth = require("../middlewares/auth");
+const { getItems } = require("../controllers/clothingItem");
 
 const userRouter = require("./users");
 const clothingRouter = require("./clothingItems");
@@ -17,6 +18,7 @@ router.use(auth);
 
 router.use("/users", userRouter);
 router.use("/items", clothingRouter);
+router.get("/items", getItems);
 router.use((req, res, next) => {
   const err = new Error("The requested resource was not found");
   err.statusCode = ERROR_CODE_404;
