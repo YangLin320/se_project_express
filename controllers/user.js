@@ -9,7 +9,7 @@ const ConflictError = require("../errors/ConflictError");
 
 const { JWT_SECRET } = require("../utils/config");
 
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password) {
     next(new BadRequestError("Email and password are required"));
@@ -31,7 +31,7 @@ const login = (req, res) => {
 };
 
 // GET USERS
-const getUsers = (req, res) => {
+const getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.status(200).send({ users }))
     .catch((err) => {
@@ -39,7 +39,7 @@ const getUsers = (req, res) => {
     });
 };
 
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
   if (!email || !password) {
     next(new BadRequestError("Email and password are required"));
@@ -67,7 +67,7 @@ const createUser = (req, res) => {
   });
 };
 
-const getCurrentUser = (req, res) => {
+const getCurrentUser = (req, res, next) => {
   const userId = req.user._id;
 
   User.findById(userId)
@@ -85,7 +85,7 @@ const getCurrentUser = (req, res) => {
 };
 
 // controllers/users.js
-const updateProfile = (req, res) => {
+const updateProfile = (req, res, next) => {
   const { name, avatar } = req.body;
   const userId = req.user._id;
 
