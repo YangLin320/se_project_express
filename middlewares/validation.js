@@ -1,7 +1,5 @@
-const router = require("../routes/index");
 const { Joi, celebrate } = require("celebrate");
 const validator = require("validator");
-const { validate } = require("../models/user");
 
 const validateURL = (value, helpers) => {
   if (validator.isURL(value)) {

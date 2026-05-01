@@ -18,6 +18,8 @@ router.use(auth);
 router.use("/users", userRouter);
 router.use("/items", clothingRouter);
 router.use((req, res, next) => {
+  const err = new Error("The requested resource was not found");
+  err.statusCode = ERROR_CODE_404;
   next(err);
 });
 
