@@ -20,7 +20,7 @@ The back-end project is focused on creating a server for the WTWR application. Y
 https://github.com/YangLin320/se_project_react/
 
 ##Link for app
-https://www.yangwtwr.crabdance.com
+https://yangwtwr.crabdance.com
 
 ##Pitch Video Link
 Check out this pitch video where I demonstrate the project!
