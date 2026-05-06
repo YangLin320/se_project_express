@@ -15,13 +15,15 @@ const {
 router.post("/signin", validateUserLogIn, login);
 router.post("/signup", validateNewUser, createUser);
 
+router.get("/items", getItems);
+
+router.use(auth);
+
 router.use("/users", userRouter);
 router.use("/items", clothingRouter);
-router.get("/items", getItems);
+
 router.use((req, res, next) => {
   next(new NotFoundError("Not Found"));
 });
-
-router.use(auth);
 
 module.exports = router;
