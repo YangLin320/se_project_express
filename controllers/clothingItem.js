@@ -40,7 +40,9 @@ const deleteItem = (req, res, next) => {
     .orFail()
     .then((item) => {
       if (item.owner.toString() !== userId) {
-        next(ForbiddenError("You do not have permission to delete this item"));
+        return next(
+          new ForbiddenError("You do not have permission to delete this item")
+        );
       }
       return clothingItem
         .findByIdAndDelete(itemId)

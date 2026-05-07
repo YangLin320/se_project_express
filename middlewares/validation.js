@@ -12,6 +12,7 @@ const validateClothingItems = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
     imageUrl: Joi.string().required().custom(validateURL),
+    weather: Joi.string().valid("hot", "warm", "cold").required(),
   }),
 });
 
@@ -44,14 +45,8 @@ const validateUserUpdate = celebrate({
   }),
 });
 
-const validateUserId = celebrate({
-  body: Joi.object().keys({
-    userId: Joi.string().hex().length(24).required(),
-  }),
-});
-
 const validateItemId = celebrate({
-  body: Joi.object().keys({
+  params: Joi.object().keys({
     itemId: Joi.string().hex().length(24).required(),
   }),
 });
@@ -61,6 +56,5 @@ module.exports = {
   validateUserUpdate,
   validateNewUser,
   validateItemId,
-  validateUserId,
   validateUserLogIn,
 };

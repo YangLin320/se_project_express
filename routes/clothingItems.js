@@ -8,12 +8,11 @@ const {
 
 const {
   validateClothingItems,
-  validateUserId,
   validateItemId,
 } = require("../middlewares/validation");
 
 router.post("/", validateClothingItems, createItem);
-router.delete("/:itemId", validateUserId, deleteItem);
+router.delete("/:itemId", validateItemId, deleteItem);
 
 router.put("/:itemId/likes", validateItemId, likeItem);
 router.delete("/:itemId/likes", validateItemId, dislikeItem);
